@@ -1,22 +1,33 @@
-import * as React from "react";
-
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
-    return (
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Input = forwardRef<HTMLInputElement, Props>(({ label, error, className, id, ...rest }, ref) => {
+  const inputId = id ?? rest.name;
+  return (
+    <div className="flex flex-col gap-1.5">
+      {label && (
+        <label htmlFor={inputId} className="text-sm font-medium text-foreground">
+          {label}
+        </label>
+      )}
       <input
-        type={type}
+        id={inputId}
+        ref={ref}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          "h-11 w-full rounded-xl border border-border bg-[var(--input)]/40 px-3.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70",
+          "focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/30",
+          error && "border-red-500/60 focus:border-red-500 focus:ring-red-500/20",
           className,
         )}
-        ref={ref}
-        {...props}
+        {...rest}
       />
-    );
-  },
-);
+      {error && <span className="text-xs text-red-500">{error}</span>}
+    </div>
+  );
+});
 Input.displayName = "Input";
-
-export { Input };
